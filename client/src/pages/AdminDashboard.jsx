@@ -31,6 +31,23 @@ const emptyProfile = {
   skills: '',
   avatarUrl: '',
   resumeUrl: '',
+  home: {
+    heroTitle: '',
+    imageCaption: '',
+    dreamIntro: '',
+    featuredEyebrow: '',
+    featuredTitle: '',
+    stats: [
+      { value: '25+', label: 'Projects stitched' },
+      { value: '12', label: 'Craft stories' },
+      { value: '4', label: 'Design domains' },
+    ],
+    promises: [
+      { icon: '✂️', title: 'Affordable' },
+      { icon: '🎨', title: 'Accessible' },
+      { icon: '✨', title: 'Achievable' },
+    ],
+  },
   social: { email: '', instagram: '', linkedin: '', behance: '' },
 };
 
@@ -45,6 +62,12 @@ const toProfileForm = (profile) => ({
   ...emptyProfile,
   ...profile,
   skills: profile.skills?.join(', ') || '',
+  home: {
+    ...emptyProfile.home,
+    ...profile.home,
+    stats: profile.home?.stats?.length ? profile.home.stats : emptyProfile.home.stats,
+    promises: profile.home?.promises?.length ? profile.home.promises : emptyProfile.home.promises,
+  },
   social: { ...emptyProfile.social, ...profile.social },
 });
 
@@ -100,6 +123,17 @@ export default function AdminDashboard() {
     localStorage.removeItem('adminPassword');
     setIsAuthed(false);
     setPassword('');
+  };
+
+
+  const updateHomeField = (name, value) => {
+    setProfileForm({ ...profileForm, home: { ...profileForm.home, [name]: value } });
+  };
+
+  const updateHomeCard = (collection, index, name, value) => {
+    const nextCards = [...(profileForm.home?.[collection] || [])];
+    nextCards[index] = { ...nextCards[index], [name]: value };
+    updateHomeField(collection, nextCards);
   };
 
   const saveProject = async (event) => {
@@ -183,6 +217,28 @@ export default function AdminDashboard() {
                 <Field key={name} label={name}><input className={inputClass} value={profileForm[name] || ''} onChange={(e) => setProfileForm({ ...profileForm, [name]: e.target.value })} /></Field>
               ))}
               <Field label="skills"><input className={inputClass} value={profileForm.skills || ''} onChange={(e) => setProfileForm({ ...profileForm, skills: e.target.value })} placeholder="comma separated" /></Field>
+            </div>
+            <h3 className="mt-6 font-serif text-2xl font-black">Home page sections</h3>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {['heroTitle', 'imageCaption', 'dreamIntro', 'featuredEyebrow', 'featuredTitle'].map((name) => (
+                <Field key={name} label={name}><input className={inputClass} value={profileForm.home?.[name] || ''} onChange={(e) => updateHomeField(name, e.target.value)} /></Field>
+              ))}
+            </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              {profileForm.home?.stats?.map((stat, index) => (
+                <div key={index} className="rounded-2xl border-2 border-[#39251b] bg-[#fff7cf] p-4">
+                  <Field label={`stat ${index + 1} value`}><input className={inputClass} value={stat.value || ''} onChange={(e) => updateHomeCard('stats', index, 'value', e.target.value)} /></Field>
+                  <Field label={`stat ${index + 1} label`}><input className={inputClass} value={stat.label || ''} onChange={(e) => updateHomeCard('stats', index, 'label', e.target.value)} /></Field>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              {profileForm.home?.promises?.map((promise, index) => (
+                <div key={index} className="rounded-2xl border-2 border-[#39251b] bg-[#fff7cf] p-4">
+                  <Field label={`promise ${index + 1} icon`}><input className={inputClass} value={promise.icon || ''} onChange={(e) => updateHomeCard('promises', index, 'icon', e.target.value)} /></Field>
+                  <Field label={`promise ${index + 1} title`}><input className={inputClass} value={promise.title || ''} onChange={(e) => updateHomeCard('promises', index, 'title', e.target.value)} /></Field>
+                </div>
+              ))}
             </div>
             <div className="mt-4 grid gap-4">
               {['bio', 'education'].map((name) => (

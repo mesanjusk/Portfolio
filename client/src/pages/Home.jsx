@@ -3,13 +3,17 @@ import { Link } from 'react-router-dom';
 import { fetchProfile, fetchProjects } from '../api/client.js';
 import ProjectCard from '../components/ProjectCard.jsx';
 
-const stats = [
+const defaultStats = [
   ['25+', 'Projects stitched'],
   ['12', 'Craft stories'],
   ['4', 'Design domains'],
 ];
 
-const promises = ['Affordable', 'Accessible', 'Achievable'];
+const defaultPromises = [
+  { icon: '✂️', title: 'Affordable' },
+  { icon: '🎨', title: 'Accessible' },
+  { icon: '✨', title: 'Achievable' },
+];
 
 export default function Home() {
   const [profile, setProfile] = useState(null);
@@ -26,6 +30,9 @@ export default function Home() {
   }, []);
 
   const displayName = profile?.name || 'Your Name';
+  const home = profile?.home || {};
+  const stats = home.stats?.length ? home.stats : defaultStats.map(([value, label]) => ({ value, label }));
+  const promises = home.promises?.length ? home.promises : defaultPromises;
 
   return (
     <div className="overflow-hidden bg-[#fff7cf]">
@@ -36,7 +43,7 @@ export default function Home() {
             {profile?.tagline || 'Design Portfolio'}
           </p>
           <h1 className="mt-8 max-w-3xl font-serif text-5xl font-black leading-[0.95] text-[#39251b] sm:text-7xl">
-            Unleash the designer within with {displayName}.
+            {home.heroTitle || `Unleash the designer within with ${displayName}.`}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#6b4a2d]">
             {profile?.bio ||
@@ -73,7 +80,7 @@ export default function Home() {
               )}
             </div>
             <p className="pt-4 text-center font-hand text-2xl font-black text-[#39251b]">
-              click to see the journey
+              {home.imageCaption || 'click to see the journey'}
             </p>
           </div>
         </div>
@@ -81,7 +88,7 @@ export default function Home() {
 
       <section className="border-y-4 border-[#39251b] bg-[#7ac7c4] py-8">
         <div className="mx-auto grid max-w-6xl gap-4 px-6 sm:grid-cols-3">
-          {stats.map(([value, label]) => (
+          {stats.map(({ value, label }) => (
             <div key={label} className="rounded-3xl border-2 border-[#39251b] bg-white p-6 text-center shadow-[6px_6px_0_#39251b]">
               <p className="font-serif text-4xl font-black text-[#ee5b3e]">{value}</p>
               <p className="mt-1 text-sm font-bold uppercase tracking-wide text-[#39251b]">{label}</p>
@@ -91,14 +98,14 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-20">
-        <p className="text-center text-lg font-bold text-[#6b4a2d]">The place where your fashion and design dream becomes</p>
+        <p className="text-center text-lg font-bold text-[#6b4a2d]">{home.dreamIntro || 'The place where your fashion and design dream becomes'}</p>
         <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {promises.map((promise, index) => (
-            <div key={promise} className="rounded-[2rem] border-2 border-[#39251b] bg-white p-8 text-center shadow-[7px_7px_0_#39251b]">
+          {promises.map((promise) => (
+            <div key={promise.title} className="rounded-[2rem] border-2 border-[#39251b] bg-white p-8 text-center shadow-[7px_7px_0_#39251b]">
               <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-[#f9a51a] text-3xl">
-                {['✂️', '🎨', '✨'][index]}
+                {promise.icon || '✨'}
               </div>
-              <h2 className="font-serif text-3xl font-black text-[#39251b]">{promise}</h2>
+              <h2 className="font-serif text-3xl font-black text-[#39251b]">{promise.title}</h2>
             </div>
           ))}
         </div>
@@ -107,8 +114,8 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 pb-24">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-bold uppercase tracking-[0.3em] text-[#ee5b3e]">Welcome to the studio</p>
-            <h2 className="mt-2 font-serif text-4xl font-black text-[#39251b]">Featured Work</h2>
+            <p className="font-bold uppercase tracking-[0.3em] text-[#ee5b3e]">{home.featuredEyebrow || 'Welcome to the studio'}</p>
+            <h2 className="mt-2 font-serif text-4xl font-black text-[#39251b]">{home.featuredTitle || 'Featured Work'}</h2>
           </div>
           <Link to="/projects" className="font-black uppercase text-[#39251b] underline decoration-[#ee5b3e] decoration-4 underline-offset-4">
             View all

@@ -9,6 +9,25 @@ const profileSchema = new mongoose.Schema({
   skills: [{ type: String }],
   avatarUrl: { type: String },
   resumeUrl: { type: String },
+  home: {
+    heroTitle: { type: String },
+    imageCaption: { type: String },
+    dreamIntro: { type: String },
+    featuredEyebrow: { type: String },
+    featuredTitle: { type: String },
+    stats: [
+      {
+        value: { type: String },
+        label: { type: String },
+      },
+    ],
+    promises: [
+      {
+        icon: { type: String },
+        title: { type: String },
+      },
+    ],
+  },
   social: {
     email: { type: String },
     instagram: { type: String },

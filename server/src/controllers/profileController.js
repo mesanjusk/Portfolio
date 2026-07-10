@@ -6,6 +6,19 @@ const normalizeList = (value) => {
   return [];
 };
 
+const normalizeHomeCards = (value, fallback = []) => {
+  if (!Array.isArray(value)) return fallback;
+  return value
+    .map((item) => ({
+      ...item,
+      value: item.value?.trim(),
+      label: item.label?.trim(),
+      icon: item.icon?.trim(),
+      title: item.title?.trim(),
+    }))
+    .filter((item) => item.value || item.label || item.icon || item.title);
+};
+
 const buildProfilePayload = (body) => ({
   name: body.name?.trim(),
   tagline: body.tagline?.trim(),
@@ -15,6 +28,15 @@ const buildProfilePayload = (body) => ({
   skills: normalizeList(body.skills),
   avatarUrl: body.avatarUrl?.trim(),
   resumeUrl: body.resumeUrl?.trim(),
+  home: {
+    heroTitle: body.home?.heroTitle?.trim(),
+    imageCaption: body.home?.imageCaption?.trim(),
+    dreamIntro: body.home?.dreamIntro?.trim(),
+    featuredEyebrow: body.home?.featuredEyebrow?.trim(),
+    featuredTitle: body.home?.featuredTitle?.trim(),
+    stats: normalizeHomeCards(body.home?.stats),
+    promises: normalizeHomeCards(body.home?.promises),
+  },
   social: {
     email: body.social?.email?.trim(),
     instagram: body.social?.instagram?.trim(),
