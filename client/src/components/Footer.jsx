@@ -1,8 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-stone-200 py-8">
-      <div className="mx-auto max-w-5xl px-6 text-sm text-stone-500">
-        <p>&copy; {new Date().getFullYear()} Your Name. NIFT Design Portfolio.</p>
+    <footer className="border-t-4 border-[#39251b] bg-[#39251b] py-10 text-[#fff7cf]">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 text-sm">
+        <p>&copy; {new Date().getFullYear()} PortfolioShala. NIFT Design Portfolio.</p>
+        <p className="font-bold uppercase tracking-[0.25em]">Let&apos;s stay connected ✨</p>
       </div>
     </footer>
   );
