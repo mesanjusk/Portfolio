@@ -17,13 +17,6 @@ async function request(path, options = {}) {
 
 const adminHeaders = (password) => ({ 'x-admin-password': password });
 
-export function verifyAdminPassword(password) {
-  return request('/api/admin/login', {
-    method: 'POST',
-    headers: adminHeaders(password),
-  });
-}
-
 export function fetchProjects(params = {}) {
   const query = new URLSearchParams(params).toString();
   return request(`/api/projects${query ? `?${query}` : ''}`);

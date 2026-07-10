@@ -6,7 +6,6 @@ import {
   fetchProjects,
   updateProfile,
   updateProject,
-  verifyAdminPassword,
 } from '../api/client.js';
 
 const emptyProject = {
@@ -31,23 +30,6 @@ const emptyProfile = {
   skills: '',
   avatarUrl: '',
   resumeUrl: '',
-  home: {
-    heroTitle: '',
-    imageCaption: '',
-    dreamIntro: '',
-    featuredEyebrow: '',
-    featuredTitle: '',
-    stats: [
-      { value: '25+', label: 'Projects stitched' },
-      { value: '12', label: 'Craft stories' },
-      { value: '4', label: 'Design domains' },
-    ],
-    promises: [
-      { icon: '✂️', title: 'Affordable' },
-      { icon: '🎨', title: 'Accessible' },
-      { icon: '✨', title: 'Achievable' },
-    ],
-  },
   social: { email: '', instagram: '', linkedin: '', behance: '' },
 };
 
@@ -62,12 +44,6 @@ const toProfileForm = (profile) => ({
   ...emptyProfile,
   ...profile,
   skills: profile.skills?.join(', ') || '',
-  home: {
-    ...emptyProfile.home,
-    ...profile.home,
-    stats: profile.home?.stats?.length ? profile.home.stats : emptyProfile.home.stats,
-    promises: profile.home?.promises?.length ? profile.home.promises : emptyProfile.home.promises,
-  },
   social: { ...emptyProfile.social, ...profile.social },
 });
 
@@ -106,34 +82,22 @@ export default function AdminDashboard() {
     if (isAuthed) loadDashboard();
   }, [isAuthed]);
 
-  const login = async (event) => {
+  const login = (event) => {
     event.preventDefault();
-    setError('');
-    try {
-      await verifyAdminPassword(password);
-      localStorage.setItem('adminPassword', password);
-      setIsAuthed(true);
-      setStatus('Welcome back, admin.');
-    } catch (err) {
-      setError(err.message || 'Incorrect password. Use the admin password.');
+    if (password !== '12345') {
+      setError('Incorrect password. Use the admin password.');
+      return;
     }
+    localStorage.setItem('adminPassword', password);
+    setIsAuthed(true);
+    setStatus('Welcome back, admin.');
+    setError('');
   };
 
   const logout = () => {
     localStorage.removeItem('adminPassword');
     setIsAuthed(false);
     setPassword('');
-  };
-
-
-  const updateHomeField = (name, value) => {
-    setProfileForm({ ...profileForm, home: { ...profileForm.home, [name]: value } });
-  };
-
-  const updateHomeCard = (collection, index, name, value) => {
-    const nextCards = [...(profileForm.home?.[collection] || [])];
-    nextCards[index] = { ...nextCards[index], [name]: value };
-    updateHomeField(collection, nextCards);
   };
 
   const saveProject = async (event) => {
@@ -186,7 +150,7 @@ export default function AdminDashboard() {
           <h1 className="mt-3 font-serif text-4xl font-black text-[#39251b]">Portfolio Control Room</h1>
           <p className="mt-3 text-[#6b4a2d]">Login to add projects and edit every visible text or image from the frontend.</p>
           <Field label="Password">
-            <input className={inputClass} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter admin password" />
+            <input className={inputClass} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="12345" />
           </Field>
           {error && <p className="mt-4 rounded-2xl bg-red-50 p-3 text-red-600">{error}</p>}
           <button className="mt-6 w-full rounded-full border-2 border-[#39251b] bg-[#ee5b3e] px-7 py-3 font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#39251b] transition-transform hover:-translate-y-1">Login</button>
@@ -217,28 +181,6 @@ export default function AdminDashboard() {
                 <Field key={name} label={name}><input className={inputClass} value={profileForm[name] || ''} onChange={(e) => setProfileForm({ ...profileForm, [name]: e.target.value })} /></Field>
               ))}
               <Field label="skills"><input className={inputClass} value={profileForm.skills || ''} onChange={(e) => setProfileForm({ ...profileForm, skills: e.target.value })} placeholder="comma separated" /></Field>
-            </div>
-            <h3 className="mt-6 font-serif text-2xl font-black">Home page sections</h3>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {['heroTitle', 'imageCaption', 'dreamIntro', 'featuredEyebrow', 'featuredTitle'].map((name) => (
-                <Field key={name} label={name}><input className={inputClass} value={profileForm.home?.[name] || ''} onChange={(e) => updateHomeField(name, e.target.value)} /></Field>
-              ))}
-            </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              {profileForm.home?.stats?.map((stat, index) => (
-                <div key={index} className="rounded-2xl border-2 border-[#39251b] bg-[#fff7cf] p-4">
-                  <Field label={`stat ${index + 1} value`}><input className={inputClass} value={stat.value || ''} onChange={(e) => updateHomeCard('stats', index, 'value', e.target.value)} /></Field>
-                  <Field label={`stat ${index + 1} label`}><input className={inputClass} value={stat.label || ''} onChange={(e) => updateHomeCard('stats', index, 'label', e.target.value)} /></Field>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              {profileForm.home?.promises?.map((promise, index) => (
-                <div key={index} className="rounded-2xl border-2 border-[#39251b] bg-[#fff7cf] p-4">
-                  <Field label={`promise ${index + 1} icon`}><input className={inputClass} value={promise.icon || ''} onChange={(e) => updateHomeCard('promises', index, 'icon', e.target.value)} /></Field>
-                  <Field label={`promise ${index + 1} title`}><input className={inputClass} value={promise.title || ''} onChange={(e) => updateHomeCard('promises', index, 'title', e.target.value)} /></Field>
-                </div>
-              ))}
             </div>
             <div className="mt-4 grid gap-4">
               {['bio', 'education'].map((name) => (
