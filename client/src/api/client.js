@@ -1,13 +1,24 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
+const apiPath = (path) => `${API_URL}${path}`;
 
 async function request(path, options = {}) {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-    ...options,
-  });
+  let res;
+
+  try {
+    res = await fetch(apiPath(path), {
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...options.headers,
+      },
+      ...options,
+    });
+  } catch (error) {
+    throw new Error(
+      `Unable to reach the API at ${apiPath(path)}. Start the backend with \`npm run dev:server\` or run \`npm run dev\` from the repo root. Original error: ${error.message}`
+    );
+  }
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || `Request to ${path} failed with status ${res.status}`);

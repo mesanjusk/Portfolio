@@ -28,7 +28,7 @@ A MERN-stack portfolio site for showcasing fashion/textile design coursework —
    cp client/.env.example client/.env
    ```
    - `server/.env` — set `MONGODB_URI` to your Atlas connection string.
-   - `client/.env` — `VITE_API_URL` should point at the server (`http://localhost:5000` locally).
+   - `client/.env` — optional for local development because Vite proxies `/api` to `http://localhost:5000`. Set `VITE_API_URL` only when the API is hosted on a different origin.
 3. Seed the database with sample projects/profile content:
    ```
    npm run seed
@@ -38,7 +38,8 @@ A MERN-stack portfolio site for showcasing fashion/textile design coursework —
    npm run dev
    ```
    - Client: http://localhost:5173
-   - Server: http://localhost:5000
+   - Server/API: http://localhost:5000
+   - If you start only the client, API requests will fail until the server is also running.
 
 ## Content
 
