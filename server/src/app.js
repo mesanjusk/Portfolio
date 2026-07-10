@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import projectRoutes from './routes/projects.js';
 import profileRoutes from './routes/profile.js';
+import adminRoutes from './routes/admin.js';
 
 connectDB();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/projects', projectRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });
