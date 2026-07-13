@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import type { LocationEntry } from "@/content/types";
 import {
   ChromeVisibilityProvider,
   useChromeVisibility,
@@ -20,11 +21,17 @@ function ChromeSync() {
   return null;
 }
 
-export function SiteChrome({ children }: { children: ReactNode }) {
+export function SiteChrome({
+  children,
+  locations,
+}: {
+  children: ReactNode;
+  locations: LocationEntry[];
+}) {
   return (
     <ChromeVisibilityProvider>
       <ChromeSync />
-      <SiteHeader />
+      <SiteHeader locations={locations} />
       <main id="main">{children}</main>
     </ChromeVisibilityProvider>
   );

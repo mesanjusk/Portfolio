@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { locations } from "@/content/locations";
+import type { LocationEntry } from "@/content/types";
 import { smoothPath } from "@/lib/smooth-path";
 import { MapNode } from "@/components/map/map-node";
 import { useIsDesktop } from "@/lib/use-media-query";
@@ -83,13 +83,13 @@ function MapPath({ pathD }: { pathD: string }) {
   );
 }
 
-export function CreativeMap() {
+export function CreativeMap({ locations }: { locations: LocationEntry[] }) {
   const isDesktop = useIsDesktop();
   const scale = useFitScale(!isDesktop);
   const [activeId, setActiveId] = useState<string | null>(null);
   const ordered = useMemo(
     () => [...locations].sort((a, b) => a.order - b.order),
-    []
+    [locations]
   );
   const pathD = useMemo(
     () => smoothPath(ordered.map((l) => l.position)),

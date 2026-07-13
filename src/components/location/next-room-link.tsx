@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { locations } from "@/content/locations";
+import type { LocationEntry } from "@/content/types";
 import { LocationIcon } from "@/components/map/location-icon";
 
-export function NextRoomLink({ currentOrder }: { currentOrder: number }) {
+export function NextRoomLink({
+  currentOrder,
+  locations,
+}: {
+  currentOrder: number;
+  locations: LocationEntry[];
+}) {
   const ordered = [...locations].sort((a, b) => a.order - b.order);
   const next = ordered.find((l) => l.order > currentOrder) ?? ordered[0];
   const href = next.id === "home" ? "/home" : `/${next.id}`;

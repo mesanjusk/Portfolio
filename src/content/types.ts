@@ -23,6 +23,11 @@ export interface MapPosition {
   y: number;
 }
 
+export interface Sketch {
+  caption: string;
+  imageUrl?: string | null;
+}
+
 export interface CaseStudy {
   slug: string;
   title: string;
@@ -30,9 +35,10 @@ export interface CaseStudy {
   medium: string;
   summary: string;
   palette: [string, string, string];
+  coverImage?: string | null;
   context: string;
   research: string[];
-  sketches: string[];
+  sketches: Sketch[];
   iterations: { title: string; description: string }[];
   outcome: string;
   reflection: string;

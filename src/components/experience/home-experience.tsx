@@ -6,6 +6,8 @@ import { AnimatePresence } from "framer-motion";
 import { LoadingScreen } from "@/components/experience/loading-screen";
 import { WelcomeGate } from "@/components/experience/welcome-gate";
 import { useChromeVisibility } from "@/components/providers/chrome-visibility";
+import type { LocationEntry } from "@/content/types";
+import type { Profile } from "@/content/profile";
 
 const CreativeMap = dynamic(
   () => import("@/components/map/creative-map").then((m) => m.CreativeMap),
@@ -16,7 +18,13 @@ type Phase = "loading" | "gate" | "explore";
 
 const SESSION_KEY = "mahiiway:entered";
 
-export function HomeExperience() {
+export function HomeExperience({
+  locations,
+  profile,
+}: {
+  locations: LocationEntry[];
+  profile: Profile;
+}) {
   const { setVisible } = useChromeVisibility();
   const [phase, setPhase] = useState<Phase>("loading");
 
@@ -43,11 +51,11 @@ export function HomeExperience() {
           <LoadingScreen key="loading" onDone={() => setPhase("gate")} />
         )}
         {phase === "gate" && (
-          <WelcomeGate key="gate" onEnter={enterExplore} />
+          <WelcomeGate key="gate" profile={profile} onEnter={enterExplore} />
         )}
       </AnimatePresence>
 
-      {phase === "explore" && <CreativeMap />}
+      {phase === "explore" && <CreativeMap locations={locations} />}
     </div>
   );
 }

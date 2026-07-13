@@ -1,9 +1,13 @@
 import type { MetadataRoute } from "next";
-import { locations } from "@/content/locations";
+import { getLocations } from "@/content/locations";
+
+export const dynamic = "force-dynamic";
 
 const BASE_URL = "https://mahiiway.vercel.app";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const locations = await getLocations();
+
   const locationPages = locations.map((location) => ({
     url: `${BASE_URL}/${location.id}`,
     lastModified: new Date(),

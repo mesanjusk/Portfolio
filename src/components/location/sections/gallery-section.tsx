@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { galleryHighlights } from "@/content/locations";
 import { useReducedMotion } from "framer-motion";
+import type { CaseStudy, LocationEntry } from "@/content/types";
 
-export function GallerySection() {
-  const highlights = galleryHighlights();
+export function GallerySection({
+  highlights,
+}: {
+  highlights: { location: LocationEntry; caseStudy: CaseStudy }[];
+}) {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
 
@@ -60,12 +64,25 @@ export function GallerySection() {
             className="group block overflow-hidden rounded-3xl border border-ink/10 bg-paper"
           >
             <div
-              className="flex h-52 items-end p-6"
-              style={{
-                background: `linear-gradient(150deg, ${caseStudy.palette[0]}, ${caseStudy.palette[1]} 55%, ${caseStudy.palette[2]})`,
-              }}
+              className="relative flex h-52 items-end p-6"
+              style={
+                caseStudy.coverImage
+                  ? undefined
+                  : {
+                      background: `linear-gradient(150deg, ${caseStudy.palette[0]}, ${caseStudy.palette[1]} 55%, ${caseStudy.palette[2]})`,
+                    }
+              }
             >
-              <span className="rounded-full bg-paper/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink">
+              {caseStudy.coverImage && (
+                <Image
+                  src={caseStudy.coverImage}
+                  alt={caseStudy.title}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 384px, (min-width: 640px) 480px, 100vw"
+                />
+              )}
+              <span className="relative rounded-full bg-paper/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink">
                 {location.name}
               </span>
             </div>
