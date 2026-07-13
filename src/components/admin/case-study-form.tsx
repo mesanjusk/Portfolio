@@ -117,6 +117,7 @@ export function CaseStudyForm({
         <Button type="submit">{initial ? "Save case study" : "Create case study"}</Button>
         {initial && (
           <DeleteButton
+            locationId={locationId}
             slug={initial.slug}
             confirming={confirmingDelete}
             onConfirm={() => setConfirmingDelete(true)}
@@ -128,10 +129,12 @@ export function CaseStudyForm({
 }
 
 function DeleteButton({
+  locationId,
   slug,
   confirming,
   onConfirm,
 }: {
+  locationId: string;
   slug: string;
   confirming: boolean;
   onConfirm: () => void;
@@ -148,7 +151,7 @@ function DeleteButton({
     );
   }
   return (
-    <form action={deleteCaseStudyAction.bind(null, slug)}>
+    <form action={deleteCaseStudyAction.bind(null, locationId, slug)}>
       <button
         type="submit"
         className="text-xs font-semibold uppercase tracking-wide text-red-700 underline"

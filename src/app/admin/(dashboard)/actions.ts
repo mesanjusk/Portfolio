@@ -120,7 +120,7 @@ export async function upsertCaseStudyAction(
   };
 
   if (originalSlug && originalSlug !== slug) {
-    await dbDeleteCaseStudy(originalSlug);
+    await dbDeleteCaseStudy(locationId, originalSlug);
   }
 
   const existingIndex = originalSlug
@@ -134,9 +134,9 @@ export async function upsertCaseStudyAction(
   redirect(`/admin?saved=${slug}`);
 }
 
-export async function deleteCaseStudyAction(slug: string) {
+export async function deleteCaseStudyAction(locationId: string, slug: string) {
   await requireAdmin();
-  await dbDeleteCaseStudy(slug);
+  await dbDeleteCaseStudy(locationId, slug);
   revalidatePath("/", "layout");
   redirect("/admin?deleted=1");
 }

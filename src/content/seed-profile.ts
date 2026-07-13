@@ -1,6 +1,6 @@
 /**
- * Initial content, loaded into Postgres once on first admin/database access
- * (see src/lib/db.ts `ensureSchema`). The live site reads from the database
+ * Initial content, loaded into MongoDB once on first admin/database access
+ * (see src/lib/db.ts `ensureSeeded`). The live site reads from the database
  * from then on — editing this file after launch has no effect; use /admin.
  */
 export const seedProfile = {

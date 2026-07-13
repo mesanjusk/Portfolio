@@ -12,9 +12,9 @@ admin panel — see **Admin panel** below.
 
 - **Next.js 15** (App Router, TypeScript)
 - **Tailwind CSS v4** for the design system (warm, editorial, paper-textured)
-- **Vercel Postgres** for content, **Vercel Blob** for uploaded images — the
-  public site reads live from the database so admin edits appear immediately
-  (see **Admin panel**)
+- **MongoDB** for content, **Vercel Blob** for uploaded images — the public
+  site reads live from the database so admin edits appear immediately (see
+  **Admin panel**)
 - **Framer Motion** for cinematic transitions, hover choreography, and
   reduced-motion-aware animation (`MotionConfig reducedMotion="user"` makes
   every animation in the tree respect the OS setting automatically)
@@ -59,10 +59,12 @@ src/
     locations.ts, profile.ts   Thin async re-exports of the DB reads —
                                 what the app actually imports
     seed-locations.ts, seed-profile.ts   One-time starter content, loaded
-                                          into Postgres the first time the
+                                          into MongoDB the first time the
                                           database is queried and empty
   lib/
-    db.ts        Postgres client, schema migration/seed, typed CRUD
+    db.ts        MongoDB client, seed-on-empty, typed CRUD (locations are
+                  one document per room with case studies embedded as an
+                  array — no separate collection/join needed)
     auth.ts       Signed session cookie (Web Crypto HMAC, no dependency)
     fonts.ts, utils.ts, use-media-query.ts, smooth-path.ts
   middleware.ts   Protects /admin/* — redirects to /admin/login without a
@@ -73,7 +75,7 @@ src/
 
 `src/content/locations.ts` and `src/content/profile.ts` are the only content
 imports the app uses — they're thin re-exports of async functions in
-`src/lib/db.ts` that read Postgres, request-deduped with React's `cache()`.
+`src/lib/db.ts` that read MongoDB, request-deduped with React's `cache()`.
 `seed-locations.ts` / `seed-profile.ts` hold the original hand-written
 content and are only ever read once, to populate an empty database — editing
 them after launch has no effect on the live site. Edit content through
@@ -85,7 +87,7 @@ A private, password-gated panel at `/admin` for editing everything without
 touching code — profile bio/stats/values/avatar, each room's text, and full
 case studies (all fields, sketch/cover images, add/edit/delete).
 
-**How it works**: edits write straight to Postgres and uploaded images go to
+**How it works**: edits write straight to MongoDB and uploaded images go to
 Vercel Blob; `revalidatePath` clears the relevant cached pages so changes
 appear on the live site immediately, no rebuild or redeploy needed. Auth is
 a single shared password (env var) plus an HMAC-signed, httpOnly session
@@ -93,25 +95,34 @@ cookie — there's no user database, since this is a one-editor site.
 
 ### One-time setup (do this once in the Vercel dashboard)
 
-1. **Database** — Project → Storage → Create Database → **Postgres** →
-   connect it to this project. Vercel sets the `POSTGRES_URL` (etc.) env
-   vars automatically.
+1. **Database** — get a MongoDB connection string (e.g. from a MongoDB
+   Atlas cluster) and add it as an environment variable named
+   `MONGODB_URI` under Project → Settings → Environment Variables. The URI
+   must include a database name in its path (e.g.
+   `mongodb+srv://user:pass@cluster.mongodb.net/mahiiway`) — that's the
+   database the app reads and writes.
 2. **Image storage** — Project → Storage → Create Database → **Blob** →
    connect it to this project. Vercel sets `BLOB_READ_WRITE_TOKEN`
    automatically.
-3. **Admin credentials** — Project → Settings → Environment Variables, add:
+3. **Admin credentials** — same Environment Variables page, add:
    - `ADMIN_PASSWORD` — whatever password you want to log in with.
    - `ADMIN_SESSION_SECRET` — any long random string (e.g. generate one with
      `openssl rand -hex 32`); this signs the session cookie.
 4. Redeploy (or just push a commit) so the new env vars take effect, then
    visit `/admin`. The first request to the database automatically creates
-   the tables and seeds them from the starter content — no migration command
-   to run by hand.
+   the `locations` and `profile` collections and seeds them from the
+   starter content if they're empty — no migration command to run by hand.
 
 Until these are set, the public site and `/admin` dashboard pages will 500
 (no database configured yet) — but `/admin/login` itself always works, since
 it has no database dependency, so you can confirm the password is wired up
 before finishing the rest of the setup.
+
+If you're pointing this at a MongoDB database that already has data in it
+from another project (rather than a fresh one), make sure `MONGODB_URI`
+targets a **separate, empty database name** — this app's seed step only
+checks its own `locations`/`profile` collections for existing documents, it
+doesn't know about unrelated collections in a shared database.
 
 ## Accessibility
 
@@ -137,7 +148,7 @@ before finishing the rest of the setup.
   only needed after the loading/gate sequence, not on first paint
 - GSAP is dynamically imported only where used (Gallery scroll reveal)
 - Content pages are dynamically rendered (not statically pre-built) since
-  content lives in a database editable from `/admin` — Postgres reads are
+  content lives in a database editable from `/admin` — MongoDB reads are
   fast and request-deduped, but this is a deliberate trade of some raw
   static-generation speed for instant, no-redeploy content edits
 
@@ -145,14 +156,14 @@ before finishing the rest of the setup.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000 — needs POSTGRES_URL et al. in .env.local
-                  # to render the public site or admin dashboard; /admin/login
+npm run dev      # http://localhost:3000 — needs MONGODB_URI in .env.local to
+                  # render the public site or admin dashboard; /admin/login
                   # works without it
 npm run build    # production build
 npm run lint
 ```
 
-To develop against a real database locally, run `vercel env pull` (after
+To develop against the real database locally, run `vercel env pull` (after
 linking the project with `vercel link`) to write `.env.local` from the
 Vercel project's environment variables.
 
@@ -160,7 +171,7 @@ Vercel project's environment variables.
 
 1. Import the repository in Vercel. Framework preset: Next.js
    (auto-detected).
-2. Follow **Admin panel → One-time setup** above (Postgres, Blob, admin env
+2. Follow **Admin panel → One-time setup** above (MongoDB, Blob, admin env
    vars) before or after the first deploy — the build itself doesn't need
    the database, since content pages render on demand at request time.
 
