@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, Map as MapIcon } from "lucide-react";
-import { locations } from "@/content/locations";
+import type { LocationEntry } from "@/content/types";
 import { useChromeVisibility } from "@/components/providers/chrome-visibility";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 
-export function SiteHeader() {
+export function SiteHeader({ locations }: { locations: LocationEntry[] }) {
   const { visible } = useChromeVisibility();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);

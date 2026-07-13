@@ -1,23 +1,15 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { locations, getLocation } from "@/content/locations";
+import { getLocation } from "@/content/locations";
 import { LocationIcon } from "@/components/map/location-icon";
 import { Plate } from "@/components/location/plate";
 import { PageEnter } from "@/components/shared/page-enter";
 
-export function generateStaticParams() {
-  return locations.flatMap((location) =>
-    location.caseStudies.map((cs) => ({
-      location: location.id,
-      project: cs.slug,
-    }))
-  );
-}
-
-function findCaseStudy(locationSlug: string, projectSlug: string) {
-  const location = getLocation(locationSlug);
+async function findCaseStudy(locationSlug: string, projectSlug: string) {
+  const location = await getLocation(locationSlug);
   const caseStudy = location?.caseStudies.find((c) => c.slug === projectSlug);
   return location && caseStudy ? { location, caseStudy } : null;
 }
@@ -28,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ location: string; project: string }>;
 }): Promise<Metadata> {
   const { location, project } = await params;
-  const found = findCaseStudy(location, project);
+  const found = await findCaseStudy(location, project);
   if (!found) return {};
   return {
     title: found.caseStudy.title,
@@ -46,7 +38,7 @@ export default async function CaseStudyPage({
   params: Promise<{ location: string; project: string }>;
 }) {
   const { location: locationSlug, project } = await params;
-  const found = findCaseStudy(locationSlug, project);
+  const found = await findCaseStudy(locationSlug, project);
   if (!found) notFound();
   const { location, caseStudy } = found;
 
@@ -94,6 +86,18 @@ export default async function CaseStudyPage({
       </header>
 
       <div className="mx-auto max-w-3xl px-6 py-16 sm:px-10 sm:py-20">
+        {caseStudy.coverImage && (
+          <PageEnter className="relative mb-14 aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9]">
+            <Image
+              src={caseStudy.coverImage}
+              alt={caseStudy.title}
+              fill
+              className="object-cover"
+              sizes="(min-width: 768px) 768px, 100vw"
+            />
+          </PageEnter>
+        )}
+
         <Section eyebrow="Context" accent={location.theme.accent}>
           <p className="text-lg leading-relaxed text-ink-soft">{caseStudy.context}</p>
         </Section>
@@ -114,11 +118,12 @@ export default async function CaseStudyPage({
 
         <Section eyebrow="Sketches" accent={location.theme.accent}>
           <div className="grid gap-6 sm:grid-cols-2">
-            {caseStudy.sketches.map((caption, i) => (
+            {caseStudy.sketches.map((sketch, i) => (
               <Plate
                 key={i}
                 palette={caseStudy.palette}
-                caption={caption}
+                caption={sketch.caption}
+                imageUrl={sketch.imageUrl}
                 index={i}
               />
             ))}

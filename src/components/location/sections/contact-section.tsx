@@ -1,15 +1,15 @@
 import { Mail, Camera, Briefcase, Palette } from "lucide-react";
-import { profile } from "@/content/profile";
+import type { Profile } from "@/content/profile";
 import { PageEnter } from "@/components/shared/page-enter";
 
-const links = [
-  { key: "email", label: profile.email, href: `mailto:${profile.email}`, icon: Mail },
-  { key: "instagram", label: "Instagram", href: profile.social.instagram, icon: Camera },
-  { key: "behance", label: "Behance", href: profile.social.behance, icon: Palette },
-  { key: "linkedin", label: "LinkedIn", href: profile.social.linkedin, icon: Briefcase },
-];
+export function ContactSection({ profile }: { profile: Profile }) {
+  const links = [
+    { key: "email", label: profile.email, href: `mailto:${profile.email}`, icon: Mail },
+    { key: "instagram", label: "Instagram", href: profile.social.instagram, icon: Camera },
+    { key: "behance", label: "Behance", href: profile.social.behance, icon: Palette },
+    { key: "linkedin", label: "LinkedIn", href: profile.social.linkedin, icon: Briefcase },
+  ];
 
-export function ContactSection() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 sm:px-10 sm:py-24">
       <PageEnter>

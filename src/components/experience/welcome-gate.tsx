@@ -1,10 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { profile } from "@/content/profile";
+import type { Profile } from "@/content/profile";
 import { Button } from "@/components/ui/button";
 
-export function WelcomeGate({ onEnter }: { onEnter: () => void }) {
+export function WelcomeGate({
+  profile,
+  onEnter,
+}: {
+  profile: Profile;
+  onEnter: () => void;
+}) {
   return (
     <motion.div
       className="fixed inset-0 z-[290] flex flex-col items-center justify-center overflow-hidden bg-paper bg-grain px-6 text-center"
@@ -48,8 +54,9 @@ export function WelcomeGate({ onEnter }: { onEnter: () => void }) {
         className="mt-6 max-w-xl text-balance text-base leading-relaxed text-ink-soft sm:text-lg"
       >
         This isn&apos;t a portfolio you scroll. It&apos;s a small world you walk
-        through — {profile.stats[0].label.toLowerCase()}, sketchbooks, and the
-        studio {profile.name} spent a whole first year building.
+        through — {(profile.stats[0]?.label ?? "studio rooms").toLowerCase()},
+        sketchbooks, and the studio {profile.name} spent a whole first year
+        building.
       </motion.p>
 
       <motion.div

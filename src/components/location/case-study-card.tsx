@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { CaseStudy, LocationEntry } from "@/content/types";
@@ -15,12 +16,25 @@ export function CaseStudyCard({
       className="group block overflow-hidden rounded-3xl border border-ink/10 bg-paper transition-shadow hover:shadow-[0_20px_45px_-25px_rgba(43,38,34,0.4)]"
     >
       <div
-        className="flex h-44 items-end p-6 sm:h-56"
-        style={{
-          background: `linear-gradient(135deg, ${caseStudy.palette[0]}, ${caseStudy.palette[1]} 55%, ${caseStudy.palette[2]})`,
-        }}
+        className="relative flex h-44 items-end p-6 sm:h-56"
+        style={
+          caseStudy.coverImage
+            ? undefined
+            : {
+                background: `linear-gradient(135deg, ${caseStudy.palette[0]}, ${caseStudy.palette[1]} 55%, ${caseStudy.palette[2]})`,
+              }
+        }
       >
-        <span className="rounded-full bg-paper/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink">
+        {caseStudy.coverImage && (
+          <Image
+            src={caseStudy.coverImage}
+            alt={caseStudy.title}
+            fill
+            className="object-cover"
+            sizes="(min-width: 640px) 480px, 100vw"
+          />
+        )}
+        <span className="relative rounded-full bg-paper/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink">
           {caseStudy.medium}
         </span>
       </div>

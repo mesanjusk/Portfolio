@@ -3,7 +3,6 @@ import { fraunces, manrope } from "@/lib/fonts";
 import { MotionRoot } from "@/components/providers/motion-root";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { TransitionProvider } from "@/components/providers/transition-provider";
-import { SiteChrome } from "@/components/shared/site-chrome";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -59,9 +58,7 @@ export default function RootLayout({
         </a>
         <MotionRoot>
           <SmoothScroll>
-            <TransitionProvider>
-              <SiteChrome>{children}</SiteChrome>
-            </TransitionProvider>
+            <TransitionProvider>{children}</TransitionProvider>
           </SmoothScroll>
         </MotionRoot>
       </body>
