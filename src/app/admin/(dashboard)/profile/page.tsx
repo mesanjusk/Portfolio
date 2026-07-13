@@ -19,6 +19,11 @@ export default async function AdminProfilePage() {
         <ImageField name="avatar" label="Avatar" currentUrl={profile.avatarUrl} />
         <input type="hidden" name="existingAvatar" value={profile.avatarUrl ?? ""} />
 
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field label="Name" name="name" defaultValue={profile.name} />
+          <Field label="Brand / site name" name="brand" defaultValue={profile.brand} />
+        </div>
+
         <Field label="Tagline" name="tagline" defaultValue={profile.tagline} />
         <Field label="Bio" name="bio" defaultValue={profile.bio} multiline rows={5} />
         <div className="grid gap-6 sm:grid-cols-2">

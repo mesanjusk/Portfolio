@@ -133,7 +133,7 @@ export const dbGetLocation = cache(async (id: string): Promise<LocationEntry | n
 
 export async function dbUpdateLocation(
   id: string,
-  data: { epithet: string; short: string; story: string }
+  data: { name: string; epithet: string; short: string; story: string }
 ) {
   const db = await getDb();
   await db.collection<LocationDoc>("locations").updateOne({ _id: id }, { $set: data });
@@ -210,6 +210,8 @@ export const dbGetProfile = cache(async (): Promise<DbProfile> => {
 });
 
 export async function dbUpdateProfile(data: {
+  name: string;
+  brand: string;
   bio: string;
   tagline: string;
   role: string;
@@ -226,6 +228,8 @@ export async function dbUpdateProfile(data: {
     { _id: "profile" },
     {
       $set: {
+        name: data.name,
+        brand: data.brand,
         bio: data.bio,
         tagline: data.tagline,
         role: data.role,

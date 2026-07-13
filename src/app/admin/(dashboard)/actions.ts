@@ -36,6 +36,8 @@ export async function updateProfileAction(formData: FormData) {
   const existingAvatar = String(formData.get("existingAvatar") ?? "");
 
   await dbUpdateProfile({
+    name: String(formData.get("name") ?? ""),
+    brand: String(formData.get("brand") ?? ""),
     bio: String(formData.get("bio") ?? ""),
     tagline: String(formData.get("tagline") ?? ""),
     role: String(formData.get("role") ?? ""),
@@ -60,6 +62,7 @@ export async function updateLocationAction(locationId: string, formData: FormDat
   await requireAdmin();
 
   await dbUpdateLocation(locationId, {
+    name: String(formData.get("name") ?? ""),
     epithet: String(formData.get("epithet") ?? ""),
     short: String(formData.get("short") ?? ""),
     story: String(formData.get("story") ?? ""),

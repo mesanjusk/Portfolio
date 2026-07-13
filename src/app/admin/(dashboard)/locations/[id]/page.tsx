@@ -28,6 +28,17 @@ export default async function AdminLocationPage({
       <form action={action} className="mt-8 flex flex-col gap-6">
         <label className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+            Room name
+          </span>
+          <input
+            name="name"
+            defaultValue={location.name}
+            className="rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-accent"
+          />
+        </label>
+
+        <label className="flex flex-col gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
             Epithet (short tagline under the room name)
           </span>
           <input
