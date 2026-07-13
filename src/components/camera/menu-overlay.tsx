@@ -24,25 +24,25 @@ export function MenuOverlay({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-0 z-50 flex flex-col bg-[#120c1c]/97 px-5 py-8 text-white"
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-2 bg-[#120c1c]/97 px-2 py-2 text-white"
     >
-      <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
+      <p className="font-mono text-[7px] uppercase tracking-[0.25em] text-white/40">
         quick menu
       </p>
-      <div className="mt-6 grid flex-1 grid-cols-2 gap-3">
+      <div className="grid w-full grid-cols-4 gap-1.5">
         {ITEMS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
             onClick={() => onSelect(id)}
-            className={`flex flex-col items-center justify-center gap-2 rounded-xl border px-3 py-6 transition ${
+            className={`flex flex-col items-center justify-center gap-1 rounded-lg border px-1 py-2 transition ${
               active === id
                 ? "border-white/60 bg-white/10"
                 : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"
             }`}
           >
-            <Icon size={20} />
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em]">{label}</span>
+            <Icon size={13} />
+            <span className="font-mono text-[6px] uppercase tracking-[0.05em]">{label}</span>
           </button>
         ))}
       </div>

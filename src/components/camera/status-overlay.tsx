@@ -7,7 +7,7 @@ export function StatusOverlay({ mode }: { mode: string }) {
   const clock = useCameraClock();
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between px-2 py-1.5 font-mono text-[8px] text-white/80 sm:text-[9px]">
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between px-1.5 py-1 font-mono text-[7px] text-white/80 sm:text-[8px]">
       <div className="flex items-center gap-1 rounded-full bg-black/30 px-1.5 py-0.5 backdrop-blur-sm">
         <span className="cam-rec-dot h-1 w-1 rounded-full bg-red-500" />
         <span className="tracking-[0.15em]">REC</span>

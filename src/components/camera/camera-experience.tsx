@@ -96,7 +96,7 @@ export function CameraExperience() {
   }, [menuOpen, lightboxId, section, selectedProjectId, shotCount, flashPulse]);
 
   return (
-    <div className="relative flex min-h-dvh w-full items-center justify-center px-4 py-10 sm:py-16">
+    <div className="relative flex h-dvh w-full flex-col items-center justify-center gap-3 overflow-hidden px-2 py-3">
       <AnimatePresence>
         {!booted && <BootSequence onDone={finishBoot} />}
       </AnimatePresence>

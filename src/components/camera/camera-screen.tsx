@@ -47,7 +47,7 @@ export function CameraScreen({
       <StatusOverlay mode={section} />
 
       <div
-        className="h-full w-full pt-7 transition-transform duration-300 ease-out"
+        className="h-full w-full pt-5 transition-transform duration-300 ease-out"
         style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
       >
         <AnimatePresence mode="wait">
