@@ -3,7 +3,8 @@
 MahiiWay is an interactive creative world for **Mahi**, a NIFT Foundation
 Course student — built as a small map you walk through, not a portfolio you
 scroll. Visitors pass through a loading sequence, a welcome gate, and then
-either an illustrated map (desktop) or a swipeable story journey (mobile),
+the same illustrated map on every device (full-bleed and hover-driven on
+desktop, a pannable touch canvas with always-visible labels on mobile),
 arriving at nine themed "rooms," each holding process-driven case studies.
 
 ## Stack
@@ -16,8 +17,8 @@ arriving at nine themed "rooms," each holding process-driven case studies.
 - **GSAP** (`ScrollTrigger`), dynamically imported only on the Gallery page,
   for a scroll-triggered reveal — used sparingly and code-split away from the
   main bundle
-- **Lenis** for desktop-only smooth scrolling (mobile keeps native touch
-  scroll, since the mobile UX is swipe/paginated rather than a long scroll)
+- **Lenis** for desktop-only smooth scrolling (the map is a fixed, pannable
+  canvas rather than a long scroll surface, so it opts out on its own)
 - Hand-rolled shadcn/ui-style primitives (`Button`, `Sheet`) built on Radix
 
 No third-party photography or stock imagery is used. Sketch/plate imagery is
@@ -36,8 +37,8 @@ src/
     icon.tsx, opengraph-image.tsx, robots.ts, sitemap.ts
   components/
     experience/    Loading screen, welcome gate, phase orchestrator
-    map/            Desktop illustrated map, nodes, line-art icons
-    mobile/         Swipeable story journey, bottom nav
+    map/            The illustrated map (desktop full-bleed / mobile
+                     pannable canvas), nodes, line-art icons
     location/       Hero, case-study sections, plates, next-room link
     providers/      Smooth scroll, cinematic route transition, reduced
                      motion config, chrome (header) visibility
@@ -57,25 +58,26 @@ component.
 
 ## Desktop vs. mobile UX
 
-These are genuinely different experiences, not one layout scaled down:
+Both share one map (`components/map/creative-map.tsx`, `map-node.tsx`) — the
+same nodes, the same hand-drawn connecting trail, the same click/tap-to-travel
+circular-reveal transition (`providers/transition-provider.tsx`) — adapted per
+input method rather than swapped for a different paradigm:
 
-- **Desktop** (`components/map/desktop-map.tsx`): a full illustrated SVG map.
-  Nodes are hand-placed, connected by a smooth hand-drawn trail, with hover
-  scale/rotate/wash animations and a click-to-travel circular-reveal
-  transition (`providers/transition-provider.tsx`) that zooms into the room
-  you clicked.
-- **Mobile** (`components/mobile/mobile-journey.tsx`): a horizontally
-  snap-scrolling, swipeable story sequence with a thumb-reachable bottom nav
-  (progress dots + prev/next), following the same 9-room narrative order.
+- **Desktop**: the map fills the viewport. Node labels reveal on hover, with
+  a scale/rotate/wash animation, since a mouse can hover before committing.
+- **Mobile**: touch has no hover, so labels are always visible, and the map
+  renders on a larger fixed canvas (900×1050) that the visitor pans around
+  with native touch scrolling — sized so the fixed-size node circles never
+  crowd each other at the percentage-based positions tuned for a wide desktop
+  viewport. It opens centered on the canvas on load.
 
 ## Accessibility
 
 - Semantic landmarks, one `<h1>` per view (including a screen-reader-only
-  heading on the map/journey, since neither has visible page-title text)
-- Full keyboard operability — map nodes and journey controls are native
-  `<button>`/`<a>` elements in narrative tab order, with a visible
-  `:focus-visible` ring site-wide
-- "Skip to content" link, `inert` on off-screen mobile slides
+  heading on the map, since it has no visible page-title text)
+- Full keyboard operability — map nodes are native `<button>` elements in
+  narrative tab order, with a visible `:focus-visible` ring site-wide
+- "Skip to content" link on every page
 - `prefers-reduced-motion` respected globally via Framer Motion's
   `reducedMotion="user"`, plus explicit skips for the loading sequence and
   page-transition wipe
@@ -91,8 +93,8 @@ These are genuinely different experiences, not one layout scaled down:
   weight to optimize
 - `next/font` self-hosts Fraunces (display) and Manrope (body) with
   `display: swap`
-- The desktop map and mobile journey are dynamically imported
-  (`next/dynamic`, `ssr: false`) so only the relevant one loads per device
+- The map is dynamically imported (`next/dynamic`, `ssr: false`) since it's
+  only needed after the loading/gate sequence, not on first paint
 - GSAP is dynamically imported only where used (Gallery scroll reveal)
 
 ## Development

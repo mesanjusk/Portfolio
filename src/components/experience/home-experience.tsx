@@ -5,15 +5,10 @@ import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { LoadingScreen } from "@/components/experience/loading-screen";
 import { WelcomeGate } from "@/components/experience/welcome-gate";
-import { useIsDesktop } from "@/lib/use-media-query";
 import { useChromeVisibility } from "@/components/providers/chrome-visibility";
 
-const DesktopMap = dynamic(
-  () => import("@/components/map/desktop-map").then((m) => m.DesktopMap),
-  { ssr: false }
-);
-const MobileJourney = dynamic(
-  () => import("@/components/mobile/mobile-journey").then((m) => m.MobileJourney),
+const CreativeMap = dynamic(
+  () => import("@/components/map/creative-map").then((m) => m.CreativeMap),
   { ssr: false }
 );
 
@@ -22,7 +17,6 @@ type Phase = "loading" | "gate" | "explore";
 const SESSION_KEY = "mahiiway:entered";
 
 export function HomeExperience() {
-  const isDesktop = useIsDesktop();
   const { setVisible } = useChromeVisibility();
   const [phase, setPhase] = useState<Phase>("loading");
 
@@ -53,8 +47,7 @@ export function HomeExperience() {
         )}
       </AnimatePresence>
 
-      {phase === "explore" &&
-        (isDesktop ? <DesktopMap /> : <MobileJourney />)}
+      {phase === "explore" && <CreativeMap />}
     </div>
   );
 }

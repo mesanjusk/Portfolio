@@ -15,12 +15,14 @@ export function MapNode({
   location,
   index,
   active,
+  alwaysShowLabel = false,
   onHoverStart,
   onHoverEnd,
 }: {
   location: LocationEntry;
   index: number;
   active: boolean;
+  alwaysShowLabel?: boolean;
   onHoverStart: () => void;
   onHoverEnd: () => void;
 }) {
@@ -67,8 +69,11 @@ export function MapNode({
       </span>
 
       <motion.span
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: active ? 1 : 0, y: active ? 0 : 4 }}
+        initial={{ opacity: alwaysShowLabel ? 1 : 0, y: 0 }}
+        animate={{
+          opacity: alwaysShowLabel || active ? 1 : 0,
+          y: alwaysShowLabel || active ? 0 : 4,
+        }}
         transition={{ duration: 0.25 }}
         className="pointer-events-none mt-3 w-40 text-center"
       >
