@@ -11,6 +11,7 @@
   --cam-accent-3: #2be3b0;
   --cam-screen-bezel: #1b1425;
   --cam-screen-bg: #120c1c;
+  --cam-metal-ink: #4b4e53;
 
   position: relative;
   min-height: 100dvh;
@@ -153,38 +154,114 @@
   50% { opacity: 0.25; }
 }
 
-/* ---------- camera body ---------- */
+/* ---------- camera body (realistic silver digicam) ---------- */
 .cam-body {
   position: relative;
-  width: min(94vw, 440px);
+  display: flex;
+  align-items: stretch;
+  gap: clamp(8px, 2.4vw, 14px);
+  width: min(94vw, 560px);
+  aspect-ratio: 1.6;
+  min-height: 0;
+  flex-shrink: 0;
   margin-inline: auto;
-  border-radius: 34px;
-  padding: 16px 16px 20px;
-  background: linear-gradient(160deg, var(--cam-plastic) 0%, var(--cam-body) 55%, #eadcf7 100%);
+  border-radius: 18px;
+  padding: clamp(9px, 2.4vw, 14px);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 18%),
+    linear-gradient(155deg, #fbfbfc 0%, #d8dade 35%, #b7bac0 60%, #eceef0 100%);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 -18px 30px rgba(217, 199, 238, 0.5) inset,
-    0 30px 60px -20px rgba(90, 55, 130, 0.35),
-    0 2px 0 var(--cam-body-shadow);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -10px 22px rgba(120, 124, 132, 0.35) inset,
+    0 24px 50px -18px rgba(40, 42, 48, 0.45),
+    0 2px 0 #9a9ea4;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.cam-screen-col {
+  flex: 1 1 64%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
 .cam-screen-bezel {
   position: relative;
-  border-radius: 22px;
-  padding: 10px;
-  background: linear-gradient(160deg, #2a2035, var(--cam-screen-bezel));
-  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.4) inset, 0 8px 18px rgba(60, 30, 90, 0.25);
+  height: 100%;
+  border-radius: 12px;
+  padding: clamp(6px, 1.6vw, 10px);
+  background: linear-gradient(160deg, #3a3a3d, var(--cam-screen-bezel));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 6px 14px rgba(20, 20, 24, 0.35);
 }
 
 .cam-screen {
   position: relative;
-  aspect-ratio: 4 / 5;
+  height: 100%;
   width: 100%;
-  border-radius: 16px;
+  border-radius: 8px;
   overflow: hidden;
   background: radial-gradient(120% 100% at 50% 0%, #201830 0%, var(--cam-screen-bg) 70%);
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6), inset 0 2px 14px rgba(0, 0, 0, 0.6);
+}
+
+.cam-control-col {
+  position: relative;
+  flex: 0 0 34%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0 4px;
+}
+
+.cam-grip-row {
+  display: flex;
+  gap: 4px;
+}
+
+.cam-grip-row span {
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: #7d8188;
+  opacity: 0.45;
+}
+
+.cam-led-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cam-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff5da2;
+  box-shadow: 0 0 5px 1px rgba(255, 93, 162, 0.6);
+}
+
+.cam-slider {
+  position: relative;
+  width: 20px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #93979e, #6c7178);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.cam-slider::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 8px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(160deg, #fff, #d8dade);
 }
 
 .cam-btn {
@@ -204,11 +281,26 @@
   box-shadow: 0 1px 0 rgba(124, 92, 255, 0.18), 0 2px 4px rgba(90, 55, 130, 0.12);
 }
 
+.cam-round-btn {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fdfdfe, #d3d6da 65%, #9a9ea4 100%);
+  box-shadow:
+    0 3px 0 #82868c,
+    0 6px 10px rgba(30, 32, 36, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  color: var(--cam-metal-ink);
+}
+
+.cam-round-btn:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 1px 0 #82868c, 0 2px 5px rgba(30, 32, 36, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
 .cam-shutter {
   background: radial-gradient(circle at 35% 30%, #ff8fc4, var(--cam-accent) 65%, #d63e86 100%);
   box-shadow:
     0 4px 0 #b8306e,
-    0 10px 18px rgba(255, 93, 162, 0.45),
+    0 8px 16px rgba(255, 93, 162, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
@@ -217,13 +309,76 @@
   box-shadow: 0 1px 0 #b8306e, 0 3px 8px rgba(255, 93, 162, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
-.cam-strap-loop {
+.cam-dial {
+  position: relative;
+  width: clamp(64px, 20vw, 88px);
+  height: clamp(64px, 20vw, 88px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #cfd2d6 55%, #93979e 100%);
+  box-shadow:
+    0 3px 0 #82868c,
+    0 8px 14px rgba(30, 32, 36, 0.3),
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
+}
+
+.cam-dial-btn {
   position: absolute;
-  width: 14px;
-  height: 22px;
-  border-radius: 7px;
-  background: linear-gradient(180deg, #e4d3f6, #cbb2e8);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(90, 55, 130, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26%;
+  height: 26%;
+  color: #4b4e53;
+  background: transparent;
+  transition: color 0.12s ease, transform 0.12s ease;
+}
+
+.cam-dial-btn:active {
+  color: var(--cam-accent);
+  transform: scale(0.92);
+}
+
+.cam-dial-up {
+  top: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cam-dial-down {
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cam-dial-left {
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cam-dial-right {
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cam-dial-center {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #fdfdfe, #c7cad0 70%, #8a8e94 100%);
+  box-shadow: 0 2px 0 #82868c, inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  color: #4b4e53;
+}
+
+.cam-dial-center:active {
+  transform: translateY(1px) scale(0.95);
 }
 
 .no-scrollbar::-webkit-scrollbar {

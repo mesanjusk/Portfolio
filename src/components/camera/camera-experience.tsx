@@ -52,6 +52,16 @@ export function CameraExperience() {
     });
   }, [flashPulse]);
 
+  const cyclePrev = useCallback(() => {
+    setMenuOpen(false);
+    setLightboxId(null);
+    flashPulse(110);
+    setSection((prev) => {
+      const idx = SECTION_ORDER.indexOf(prev);
+      return SECTION_ORDER[(idx - 1 + SECTION_ORDER.length) % SECTION_ORDER.length];
+    });
+  }, [flashPulse]);
+
   const goToSection = useCallback(
     (next: CameraSection) => {
       flashPulse(110);
@@ -105,6 +115,7 @@ export function CameraExperience() {
           onSelectProject={setSelectedProjectId}
           onCloseLightbox={() => setLightboxId(null)}
           onCycleMode={cycleMode}
+          onCyclePrev={cyclePrev}
           onToggleMenu={() => setMenuOpen((v) => !v)}
           onGoToSection={goToSection}
           onZoomIn={zoomIn}
