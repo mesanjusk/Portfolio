@@ -1,16 +1,41 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { locations } from "@/content/locations";
 import { smoothPath } from "@/lib/smooth-path";
 import { MapNode } from "@/components/map/map-node";
 import { useIsDesktop } from "@/lib/use-media-query";
 
-// Fixed pixel canvas mobile pans around, sized so the 64px node circles
-// never crowd each other at percentage-based positions designed for a wide
-// desktop viewport.
-const MOBILE_CANVAS = { width: 900, height: 1050 };
+// Virtual canvas the map lays out on for narrow viewports. Small screens
+// don't get their own scroll/pan surface — instead the whole map (nodes,
+// trail, labels) is rendered at this fixed size and uniformly scaled down to
+// fit, the same way a phone's "Request desktop site" zooms the real desktop
+// layout out to fit the screen. Sized so the fixed 64px node circles keep
+// clear of each other at every position on the map.
+const DESIGN_WIDTH = 620;
+const DESIGN_HEIGHT = 760;
+
+function useFitScale(active: boolean) {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    if (!active) return;
+    const compute = () => {
+      const s = Math.min(
+        window.innerWidth / DESIGN_WIDTH,
+        window.innerHeight / DESIGN_HEIGHT,
+        1
+      );
+      setScale(s);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, [active]);
+
+  return scale;
+}
 
 function AmbientAtmosphere() {
   return (
@@ -60,8 +85,8 @@ function MapPath({ pathD }: { pathD: string }) {
 
 export function CreativeMap() {
   const isDesktop = useIsDesktop();
+  const scale = useFitScale(!isDesktop);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
   const ordered = useMemo(
     () => [...locations].sort((a, b) => a.order - b.order),
     []
@@ -71,23 +96,12 @@ export function CreativeMap() {
     [ordered]
   );
 
-  // Mobile: open the map centered on its middle, so it reads as "you're
-  // standing inside the map" rather than pinned to a random corner.
-  useEffect(() => {
-    if (isDesktop) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
-    el.scrollTop = (el.scrollHeight - el.clientHeight) / 2;
-  }, [isDesktop]);
-
   const nodes = ordered.map((location, i) => (
     <MapNode
       key={location.id}
       location={location}
       index={i}
       active={activeId === location.id}
-      alwaysShowLabel={!isDesktop}
       onHoverStart={() => setActiveId(location.id)}
       onHoverEnd={() => setActiveId(null)}
     />
@@ -99,34 +113,30 @@ export function CreativeMap() {
         MahiiWay — an interactive map of Mahi&apos;s creative journey
       </h1>
 
-      {isDesktop ? (
-        <>
-          <AmbientAtmosphere />
-          <MapPath pathD={pathD} />
-          <div className="relative h-full w-full">{nodes}</div>
-        </>
-      ) : (
-        <div
-          ref={scrollRef}
-          className="no-scrollbar absolute inset-0 overflow-auto"
-          style={{ touchAction: "pan-x pan-y" }}
-        >
-          <div
-            className="relative"
-            style={{ width: MOBILE_CANVAS.width, height: MOBILE_CANVAS.height }}
-          >
-            <AmbientAtmosphere />
-            <MapPath pathD={pathD} />
-            {nodes}
-          </div>
-        </div>
-      )}
+      <div
+        className="absolute"
+        style={
+          isDesktop
+            ? { inset: 0 }
+            : {
+                left: "50%",
+                top: "50%",
+                width: DESIGN_WIDTH,
+                height: DESIGN_HEIGHT,
+                transform: `translate(-50%, -50%) scale(${scale})`,
+              }
+        }
+      >
+        <AmbientAtmosphere />
+        <MapPath pathD={pathD} />
+        <div className="relative h-full w-full">{nodes}</div>
+      </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-6 z-10 flex justify-center px-6 text-center sm:bottom-10">
         <p className="rounded-full bg-paper/85 px-4 py-2 text-[11px] uppercase tracking-[0.3em] text-ink-soft shadow-sm backdrop-blur">
           {isDesktop
             ? "Hover a room to peek in · Click to walk through the door"
-            : "Pan around the map · Tap a room to step inside"}
+            : "Tap a room to step inside"}
         </p>
       </div>
     </div>

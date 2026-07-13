@@ -15,14 +15,12 @@ export function MapNode({
   location,
   index,
   active,
-  alwaysShowLabel = false,
   onHoverStart,
   onHoverEnd,
 }: {
   location: LocationEntry;
   index: number;
   active: boolean;
-  alwaysShowLabel?: boolean;
   onHoverStart: () => void;
   onHoverEnd: () => void;
 }) {
@@ -34,9 +32,14 @@ export function MapNode({
   return (
     <motion.button
       type="button"
-      onClick={() =>
-        travelTo(href, location.position, location.theme.accent)
-      }
+      onClick={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const origin = {
+          x: ((rect.left + rect.width / 2) / window.innerWidth) * 100,
+          y: ((rect.top + rect.height / 2) / window.innerHeight) * 100,
+        };
+        travelTo(href, origin, location.theme.accent);
+      }}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
       onFocus={onHoverStart}
@@ -69,11 +72,8 @@ export function MapNode({
       </span>
 
       <motion.span
-        initial={{ opacity: alwaysShowLabel ? 1 : 0, y: 0 }}
-        animate={{
-          opacity: alwaysShowLabel || active ? 1 : 0,
-          y: alwaysShowLabel || active ? 0 : 4,
-        }}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: active ? 1 : 0, y: active ? 0 : 4 }}
         transition={{ duration: 0.25 }}
         className="pointer-events-none mt-3 w-40 text-center"
       >

@@ -3,9 +3,9 @@
 MahiiWay is an interactive creative world for **Mahi**, a NIFT Foundation
 Course student — built as a small map you walk through, not a portfolio you
 scroll. Visitors pass through a loading sequence, a welcome gate, and then
-the same illustrated map on every device (full-bleed and hover-driven on
-desktop, a pannable touch canvas with always-visible labels on mobile),
-arriving at nine themed "rooms," each holding process-driven case studies.
+the same illustrated map on every device, scaled to fit rather than swapped
+for a different layout, arriving at nine themed "rooms," each holding
+process-driven case studies.
 
 ## Stack
 
@@ -17,8 +17,8 @@ arriving at nine themed "rooms," each holding process-driven case studies.
 - **GSAP** (`ScrollTrigger`), dynamically imported only on the Gallery page,
   for a scroll-triggered reveal — used sparingly and code-split away from the
   main bundle
-- **Lenis** for desktop-only smooth scrolling (the map is a fixed, pannable
-  canvas rather than a long scroll surface, so it opts out on its own)
+- **Lenis** for desktop-only smooth scrolling (the map is a fixed canvas
+  rather than a long scroll surface, so it opts out on its own)
 - Hand-rolled shadcn/ui-style primitives (`Button`, `Sheet`) built on Radix
 
 No third-party photography or stock imagery is used. Sketch/plate imagery is
@@ -37,8 +37,7 @@ src/
     icon.tsx, opengraph-image.tsx, robots.ts, sitemap.ts
   components/
     experience/    Loading screen, welcome gate, phase orchestrator
-    map/            The illustrated map (desktop full-bleed / mobile
-                     pannable canvas), nodes, line-art icons
+    map/            The illustrated map, nodes, line-art icons
     location/       Hero, case-study sections, plates, next-room link
     providers/      Smooth scroll, cinematic route transition, reduced
                      motion config, chrome (header) visibility
@@ -60,16 +59,21 @@ component.
 
 Both share one map (`components/map/creative-map.tsx`, `map-node.tsx`) — the
 same nodes, the same hand-drawn connecting trail, the same click/tap-to-travel
-circular-reveal transition (`providers/transition-provider.tsx`) — adapted per
-input method rather than swapped for a different paradigm:
+circular-reveal transition (`providers/transition-provider.tsx`):
 
-- **Desktop**: the map fills the viewport. Node labels reveal on hover, with
-  a scale/rotate/wash animation, since a mouse can hover before committing.
-- **Mobile**: touch has no hover, so labels are always visible, and the map
-  renders on a larger fixed canvas (900×1050) that the visitor pans around
-  with native touch scrolling — sized so the fixed-size node circles never
-  crowd each other at the percentage-based positions tuned for a wide desktop
-  viewport. It opens centered on the canvas on load.
+- **Desktop** (≥900px): the map fills the viewport at its natural size. Node
+  labels reveal on hover, with a scale/rotate/wash animation, since a mouse
+  can hover before committing.
+- **Mobile**: rather than a scroll/pan surface, the whole map is laid out on
+  a fixed 620×760 virtual canvas and uniformly scaled down with a CSS
+  `transform: scale()` to fit the viewport in one screen — the same effect as
+  a browser's "Request desktop site" zoom, so the full map, trail, and every
+  node are visible at once with no panning. The canvas size is tuned so the
+  fixed-size node circles stay clear of each other at the percentage
+  positions shared with desktop. Labels stay hover-only, matching desktop,
+  since at mobile's scale-down factor always-on text would be illegibly
+  small; the header's "Rooms" drawer lists every room by name as the
+  text-first way to find one.
 
 ## Accessibility
 
