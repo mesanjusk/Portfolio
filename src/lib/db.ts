@@ -2,7 +2,7 @@ import { MongoClient, type Db } from "mongodb";
 import { cache } from "react";
 import { seedLocations } from "@/content/seed-locations";
 import { seedProfile } from "@/content/seed-profile";
-import type { CaseStudy, LocationEntry } from "@/content/types";
+import type { CaseStudy, LocationEntry, LocationTheme, RoomPhoto } from "@/content/types";
 
 let clientPromise: Promise<MongoClient> | null = null;
 
@@ -33,6 +33,7 @@ interface LocationDoc {
   story: string;
   position: { x: number; y: number };
   theme: { ink: string; accent: string; wash: string };
+  photos?: RoomPhoto[];
   caseStudies: CaseStudy[];
 }
 
@@ -109,6 +110,7 @@ function docToLocation(doc: LocationDoc): LocationEntry {
     story: doc.story,
     position: doc.position,
     theme: doc.theme,
+    photos: doc.photos ?? [],
     caseStudies: doc.caseStudies ?? [],
   };
 }
@@ -133,10 +135,60 @@ export const dbGetLocation = cache(async (id: string): Promise<LocationEntry | n
 
 export async function dbUpdateLocation(
   id: string,
-  data: { name: string; epithet: string; short: string; story: string }
+  data: { name: string; epithet: string; short: string; story: string; photos: RoomPhoto[] }
 ) {
   const db = await getDb();
   await db.collection<LocationDoc>("locations").updateOne({ _id: id }, { $set: data });
+}
+
+const THEME_ROTATION: LocationTheme[] = [
+  { ink: "#2B2622", accent: "#A75336", wash: "#F3E7DA" },
+  { ink: "#26333D", accent: "#33475B", wash: "#E4E9ED" },
+  { ink: "#233022", accent: "#4C6B44", wash: "#E3EADD" },
+  { ink: "#2E2418", accent: "#8A5A2E", wash: "#F0E3D0" },
+  { ink: "#241F2E", accent: "#5B4178", wash: "#E7E1EF" },
+];
+
+export async function dbCreateLocation(
+  id: string,
+  data: { name: string; epithet: string; short: string; story: string }
+): Promise<LocationEntry> {
+  const db = await getDb();
+  const collection = db.collection<LocationDoc>("locations");
+
+  const existing = await collection.findOne({ _id: id });
+  if (existing) throw new Error("A room with this ID already exists");
+
+  const count = await collection.estimatedDocumentCount();
+  const theme = THEME_ROTATION[count % THEME_ROTATION.length];
+  const angle = (count / Math.max(count + 1, 1)) * Math.PI * 2;
+  const position = {
+    x: Math.round(50 + 32 * Math.cos(angle)),
+    y: Math.round(50 + 32 * Math.sin(angle)),
+  };
+
+  const doc: LocationDoc = {
+    _id: id,
+    order: count,
+    name: data.name,
+    epithet: data.epithet,
+    short: data.short,
+    story: data.story,
+    position,
+    theme,
+    photos: [],
+    caseStudies: [],
+  };
+  await collection.insertOne(doc);
+  return docToLocation(doc);
+}
+
+export async function dbDeleteLocation(id: string) {
+  const db = await getDb();
+  const collection = db.collection<LocationDoc>("locations");
+  const count = await collection.estimatedDocumentCount();
+  if (count <= 1) throw new Error("Can't delete the last remaining room");
+  await collection.deleteOne({ _id: id });
 }
 
 export const dbGetCaseStudy = cache(

@@ -1,7 +1,7 @@
 import type { LocationId } from "@/content/types";
 import type { SVGProps } from "react";
 
-const paths: Record<LocationId, React.ReactNode> = {
+const paths: Partial<Record<LocationId, React.ReactNode>> = {
   home: (
     <>
       <path d="M6 19V11.5L16 5l10 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 6 19Z" />
@@ -66,6 +66,9 @@ const paths: Record<LocationId, React.ReactNode> = {
   ),
 };
 
+// Fallback for rooms added after launch, which don't have a hand-drawn icon of their own yet.
+const defaultPath = paths.home;
+
 export function LocationIcon({
   id,
   ...props
@@ -81,7 +84,7 @@ export function LocationIcon({
       aria-hidden
       {...props}
     >
-      {paths[id]}
+      {paths[id] ?? defaultPath}
     </svg>
   );
 }

@@ -10,8 +10,10 @@ import {
   dbUpsertCaseStudy,
   dbDeleteCaseStudy,
   dbGetLocation,
+  dbCreateLocation,
+  dbDeleteLocation,
 } from "@/lib/db";
-import type { CaseStudy } from "@/content/types";
+import type { CaseStudy, RoomPhoto } from "@/content/types";
 
 function slugify(value: string) {
   return value
@@ -61,15 +63,53 @@ export async function updateProfileAction(formData: FormData) {
 export async function updateLocationAction(locationId: string, formData: FormData) {
   await requireAdmin();
 
+  const photoCount = Number(formData.get("photoCount") ?? 0);
+  const photos: RoomPhoto[] = [];
+  for (let i = 0; i < photoCount; i++) {
+    const caption = String(formData.get(`photo_caption_${i}`) ?? "").trim();
+    const existing = String(formData.get(`photo_existing_${i}`) ?? "");
+    const uploaded = await uploadIfPresent(formData.get(`photo_image_${i}`), `room-photo-${i}`);
+    const url = uploaded || existing;
+    if (!url) continue;
+    photos.push({ url, caption });
+  }
+
   await dbUpdateLocation(locationId, {
     name: String(formData.get("name") ?? ""),
+    epithet: String(formData.get("epithet") ?? ""),
+    short: String(formData.get("short") ?? ""),
+    story: String(formData.get("story") ?? ""),
+    photos,
+  });
+
+  revalidatePath("/", "layout");
+  redirect(`/admin?saved=${locationId}`);
+}
+
+export async function createLocationAction(formData: FormData) {
+  await requireAdmin();
+
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) throw new Error("Room name is required");
+  const id = slugify(String(formData.get("id") ?? "") || name);
+  if (!id) throw new Error("Room name is required");
+
+  await dbCreateLocation(id, {
+    name,
     epithet: String(formData.get("epithet") ?? ""),
     short: String(formData.get("short") ?? ""),
     story: String(formData.get("story") ?? ""),
   });
 
   revalidatePath("/", "layout");
-  redirect(`/admin?saved=${locationId}`);
+  redirect(`/admin?saved=${id}`);
+}
+
+export async function deleteLocationAction(locationId: string) {
+  await requireAdmin();
+  await dbDeleteLocation(locationId);
+  revalidatePath("/", "layout");
+  redirect("/admin?deleted=1");
 }
 
 export async function upsertCaseStudyAction(

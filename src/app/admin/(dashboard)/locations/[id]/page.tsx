@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getLocation } from "@/content/locations";
 import { updateLocationAction } from "../../actions";
 import { Button } from "@/components/ui/button";
+import { PhotosEditor } from "@/components/admin/photos-editor";
+import { DeleteRoomButton } from "@/components/admin/delete-room-button";
 
 export default async function AdminLocationPage({
   params,
@@ -72,9 +74,19 @@ export default async function AdminLocationPage({
           />
         </label>
 
-        <Button type="submit" className="self-start">
-          Save room
-        </Button>
+        <section>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft">
+            Room photos
+          </p>
+          <div className="mt-3">
+            <PhotosEditor initialPhotos={location.photos ?? []} />
+          </div>
+        </section>
+
+        <div className="flex items-center gap-4">
+          <Button type="submit">Save room</Button>
+          <DeleteRoomButton locationId={location.id} />
+        </div>
       </form>
     </div>
   );

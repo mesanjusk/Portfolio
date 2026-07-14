@@ -1,13 +1,5 @@
-export type LocationId =
-  | "home"
-  | "fashion-atelier"
-  | "digital-lab"
-  | "illustration-studio"
-  | "rangoli-courtyard"
-  | "process-library"
-  | "inspiration-garden"
-  | "gallery"
-  | "contact-house";
+/** Room/location slug. The starter rooms use fixed ids, but admins can add more. */
+export type LocationId = string;
 
 export interface LocationTheme {
   /** deep accent used for text/ink on paper */
@@ -45,6 +37,11 @@ export interface CaseStudy {
   tools: string[];
 }
 
+export interface RoomPhoto {
+  url: string;
+  caption?: string;
+}
+
 export interface LocationEntry {
   id: LocationId;
   order: number;
@@ -54,5 +51,6 @@ export interface LocationEntry {
   story: string;
   position: MapPosition;
   theme: LocationTheme;
+  photos?: RoomPhoto[];
   caseStudies: CaseStudy[];
 }

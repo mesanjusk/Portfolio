@@ -8,6 +8,7 @@ import { HomeSection } from "@/components/location/sections/home-section";
 import { StudioSection } from "@/components/location/sections/studio-section";
 import { GallerySection } from "@/components/location/sections/gallery-section";
 import { ContactSection } from "@/components/location/sections/contact-section";
+import { RoomPhotosSection } from "@/components/location/sections/room-photos-section";
 
 export async function generateMetadata({
   params,
@@ -52,6 +53,9 @@ export default async function LocationPage({
         <ContactSection profile={profile} />
       )}
       {location.caseStudies.length > 0 && <StudioSection location={location} />}
+      {location.photos && location.photos.length > 0 && (
+        <RoomPhotosSection photos={location.photos} />
+      )}
       <NextRoomLink currentOrder={location.order} locations={allLocations} />
     </article>
   );

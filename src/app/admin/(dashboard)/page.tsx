@@ -25,9 +25,17 @@ export default async function AdminDashboard() {
         <span className="text-sm font-semibold text-accent">Edit →</span>
       </Link>
 
-      <p className="mt-10 text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft">
-        Rooms
-      </p>
+      <div className="mt-10 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft">
+          Rooms
+        </p>
+        <Link
+          href="/admin/locations/new"
+          className="text-xs font-semibold uppercase tracking-wide text-accent"
+        >
+          + Add room
+        </Link>
+      </div>
       <div className="mt-4 flex flex-col gap-3">
         {locations.map((location) => (
           <div
