@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { LoadingScreen } from "@/components/experience/loading-screen";
 import { WelcomeGate } from "@/components/experience/welcome-gate";
 import { useChromeVisibility } from "@/components/providers/chrome-visibility";
+import { useMapTransition } from "@/components/providers/transition-provider";
 import type { LocationEntry } from "@/content/types";
 import type { Profile } from "@/content/profile";
 
@@ -26,6 +27,7 @@ export function HomeExperience({
   profile: Profile;
 }) {
   const { setVisible } = useChromeVisibility();
+  const { travelTo } = useMapTransition();
   const [phase, setPhase] = useState<Phase>("loading");
 
   useEffect(() => {
@@ -39,9 +41,10 @@ export function HomeExperience({
     setVisible(phase === "explore");
   }, [phase, setVisible]);
 
-  const enterExplore = () => {
+  const enterJourney = () => {
     window.sessionStorage.setItem(SESSION_KEY, "1");
-    setPhase("explore");
+    const home = locations.find((l) => l.id === "home");
+    travelTo("/home", { x: 50, y: 50 }, home?.theme.accent);
   };
 
   return (
@@ -51,7 +54,7 @@ export function HomeExperience({
           <LoadingScreen key="loading" onDone={() => setPhase("gate")} />
         )}
         {phase === "gate" && (
-          <WelcomeGate key="gate" profile={profile} onEnter={enterExplore} />
+          <WelcomeGate key="gate" profile={profile} onEnter={enterJourney} />
         )}
       </AnimatePresence>
 

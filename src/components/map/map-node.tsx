@@ -15,12 +15,18 @@ export function MapNode({
   location,
   index,
   active,
+  unlocked,
+  current,
+  justUnlocked,
   onHoverStart,
   onHoverEnd,
 }: {
   location: LocationEntry;
   index: number;
   active: boolean;
+  unlocked: boolean;
+  current: boolean;
+  justUnlocked: boolean;
   onHoverStart: () => void;
   onHoverEnd: () => void;
 }) {
@@ -47,23 +53,47 @@ export function MapNode({
       className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center focus:outline-none"
       style={{ left: `${location.position.x}%`, top: `${location.position.y}%` }}
       initial={reduced ? undefined : { opacity: 0, scale: 0.7 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ opacity: unlocked ? 1 : 0.4, scale: 1 }}
       transition={{ delay: 0.5 + index * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={reduced ? undefined : { scale: 1.08, rotate: index % 2 === 0 ? -2 : 2 }}
-      whileFocus={reduced ? undefined : { scale: 1.08 }}
+      whileHover={reduced ? undefined : { scale: 1.08, rotate: index % 2 === 0 ? -2 : 2, opacity: 1 }}
+      whileFocus={reduced ? undefined : { scale: 1.08, opacity: 1 }}
       whileTap={{ scale: 0.96 }}
-      aria-label={`${location.name} — ${location.short}`}
+      aria-label={`${location.name} — ${unlocked ? location.short : "Not yet explored"}`}
     >
       <span
-        className="relative flex h-16 w-16 items-center justify-center border shadow-[0_10px_24px_-12px_rgba(43,38,34,0.35)] transition-colors duration-300 sm:h-20 sm:w-20"
+        className="relative flex h-16 w-16 items-center justify-center border shadow-[0_10px_24px_-12px_rgba(43,38,34,0.35)] transition-all duration-300 sm:h-20 sm:w-20"
         style={{
           borderRadius: radius,
-          borderColor: `color-mix(in srgb, ${location.theme.accent} 45%, transparent)`,
+          borderColor: `color-mix(in srgb, ${location.theme.accent} ${unlocked ? 45 : 20}%, transparent)`,
           backgroundColor: active
             ? location.theme.wash
             : "color-mix(in srgb, var(--color-paper) 88%, white)",
+          filter: unlocked ? "none" : "grayscale(0.65)",
+          boxShadow: current
+            ? `0 0 0 4px color-mix(in srgb, ${location.theme.accent} 35%, transparent)`
+            : undefined,
         }}
       >
+        {current && !reduced && (
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{ borderRadius: radius, border: `1px solid ${location.theme.accent}` }}
+            animate={{ scale: [1, 1.22, 1], opacity: [0.55, 0, 0.55] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+        {justUnlocked && !reduced && (
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{ borderRadius: radius, border: `2px solid ${location.theme.accent}` }}
+            initial={{ scale: 0.85, opacity: 0.9 }}
+            animate={{ scale: 1.7, opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          />
+        )}
+
         <LocationIcon
           id={location.id}
           className="h-7 w-7 sm:h-8 sm:w-8"
@@ -81,7 +111,7 @@ export function MapNode({
           {location.name}
         </span>
         <span className="mt-0.5 block text-[11px] leading-snug text-ink-soft">
-          {location.epithet}
+          {unlocked ? location.epithet : "Undiscovered"}
         </span>
       </motion.span>
     </motion.button>

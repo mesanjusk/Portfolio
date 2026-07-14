@@ -7,6 +7,7 @@ import {
   ChromeVisibilityProvider,
   useChromeVisibility,
 } from "@/components/providers/chrome-visibility";
+import { JourneyProvider } from "@/components/providers/journey-provider";
 import { SiteHeader } from "@/components/shared/site-header";
 import { useEffect } from "react";
 
@@ -29,10 +30,12 @@ export function SiteChrome({
   locations: LocationEntry[];
 }) {
   return (
-    <ChromeVisibilityProvider>
-      <ChromeSync />
-      <SiteHeader locations={locations} />
-      <main id="main">{children}</main>
-    </ChromeVisibilityProvider>
+    <JourneyProvider>
+      <ChromeVisibilityProvider>
+        <ChromeSync />
+        <SiteHeader locations={locations} />
+        <main id="main">{children}</main>
+      </ChromeVisibilityProvider>
+    </JourneyProvider>
   );
 }

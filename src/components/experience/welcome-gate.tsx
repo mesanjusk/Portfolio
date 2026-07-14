@@ -66,7 +66,7 @@ export function WelcomeGate({
         className="mt-10"
       >
         <Button size="lg" onClick={onEnter}>
-          Enter the map
+          Start the Journey
         </Button>
       </motion.div>
 

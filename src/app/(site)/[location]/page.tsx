@@ -4,6 +4,7 @@ import { getLocation, getLocations, galleryHighlights } from "@/content/location
 import { getProfile } from "@/content/profile";
 import { LocationHero } from "@/components/location/location-hero";
 import { NextRoomLink } from "@/components/location/next-room-link";
+import { JourneyTracker } from "@/components/experience/journey-tracker";
 import { HomeSection } from "@/components/location/sections/home-section";
 import { StudioSection } from "@/components/location/sections/studio-section";
 import { GallerySection } from "@/components/location/sections/gallery-section";
@@ -43,6 +44,7 @@ export default async function LocationPage({
 
   return (
     <article>
+      <JourneyTracker id={location.id} />
       <LocationHero location={location} />
       {location.id === "home" && profile && <HomeSection profile={profile} />}
       {location.id === "gallery" && highlights && (
